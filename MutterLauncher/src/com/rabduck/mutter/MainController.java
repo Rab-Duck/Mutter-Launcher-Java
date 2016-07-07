@@ -11,6 +11,8 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -51,29 +53,35 @@ public class MainController implements Initializable{
 		itemListView.getSelectionModel().select(0);
 
 
-		cmbbxSearchText.editorProperty().get().textProperty().addListener((observable, oldValue, newValue) -> {
+		// reference:
+		// java - JavaFX - ComboBox listener for its texfield - Stack Overflow
+		// http://stackoverflow.com/questions/18657317/javafx-combobox-listener-for-its-texfield
+		cmbbxSearchText.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
 		    System.out.println("cmbbx changed from " + oldValue + " to " + newValue);
 		    
 			items.clear();
 			items.addAll(collector.grep(newValue));
 			itemListView.getSelectionModel().select(0);
 		});
-		cmbbxSearchText.editorProperty().get().setOnKeyPressed((event) -> {
+		cmbbxSearchText.getEditor().setOnKeyPressed((event) -> {
 			System.out.println("onKeyPressed:" + event);
 			OnKeyPressedCommon(event);
 		});
-		cmbbxSearchText.editorProperty().get().setOnKeyTyped((event) -> {
+		cmbbxSearchText.getEditor().setOnKeyTyped((event) -> {
 			System.out.println("onKeyTyped:" + event);
 			if(event.getCode() == KeyCode.ENTER || event.getCharacter().equals("\n") || event.getCharacter().equals("\r")){
 				executeSelectedItem();
 			}
 		});
-		cmbbxSearchText.editorProperty().get().setOnAction((event) -> {
+		cmbbxSearchText.getEditor().setOnAction((event) -> {
 			System.out.println("OnAction editorProperty:" + event);
 			// executeSelectedItem();
 		});
-		cmbbxSearchText.valueProperty().addListener((listener) ->{
-			System.out.println(listener);
+		cmbbxSearchText.valueProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue ov, String t, String t1) {
+				 System.out.println(ov); System.out.println(t); System.out.println(t1);
+			}
 		});
 		
 		// txtPathView.textProperty().bind(itemList.getSelectionModel().selectedItemProperty());
