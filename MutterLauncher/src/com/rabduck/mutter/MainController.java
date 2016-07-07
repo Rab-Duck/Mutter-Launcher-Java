@@ -40,28 +40,47 @@ public class MainController implements Initializable{
 
 		
 	private MainCollector collector;
+	
+	private void updateView(String searchStr){
+		if(searchStr == null){
+			searchStr = cmbbxSearchText.getValue();
+		}
+		items.clear();
+		items.addAll(collector.grep(searchStr));
+		itemListView.getSelectionModel().select(0);
+	}
+	
+	private void collect(){
+		if(collector != null){
+			collector.setOnSucceeded(value -> {
+				System.out.println("collect thread is succeeded:" + value);
+				updateView(null);
+			});
+			collector.setOnFailed(value -> {
+				System.out.println("collect thread is failed:" + value);
+			});
+		    Thread thread = new Thread(collector);
+		    thread.setDaemon(true);
+		    thread.start();
+		}
+	}
+	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		System.out.println("Controller Initialized!" + location + ", " + resources );
 		
 		collector = new MainCollector();
-		collector.collect();
+		collect();
 		// collector.getAllItemList().stream().forEach(item -> {System.out.println(item.getItemName() + ":" + item.getItemPath());});
-
-		items = FXCollections.observableArrayList(collector.getAllItemList());
+		items = FXCollections.observableArrayList();
 		itemListView.setItems(items);
-		itemListView.getSelectionModel().select(0);
-
 
 		// reference:
 		// java - JavaFX - ComboBox listener for its texfield - Stack Overflow
 		// http://stackoverflow.com/questions/18657317/javafx-combobox-listener-for-its-texfield
 		cmbbxSearchText.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
 		    System.out.println("cmbbx changed from " + oldValue + " to " + newValue);
-		    
-			items.clear();
-			items.addAll(collector.grep(newValue));
-			itemListView.getSelectionModel().select(0);
+			updateView(newValue);
 		});
 		cmbbxSearchText.getEditor().setOnKeyPressed((event) -> {
 			System.out.println("onKeyPressed:" + event);

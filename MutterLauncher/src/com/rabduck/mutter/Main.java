@@ -65,7 +65,7 @@ public class Main extends Application {
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Mutter Launcher@Java");
 			primaryStage.initStyle(StageStyle.UTILITY);
-			// primaryStage.show();
+			primaryStage.show();
 			
 			// reference:
 			// awt - JavaFX app in System Tray - Stack Overflow

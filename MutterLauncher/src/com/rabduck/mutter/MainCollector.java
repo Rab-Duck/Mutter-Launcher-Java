@@ -8,6 +8,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javafx.concurrent.Task;
+
 /**
  * 
  */
@@ -16,14 +18,19 @@ import java.util.concurrent.TimeUnit;
  * @author Rab-Duck
  *
  */
-public class MainCollector {
+public class MainCollector extends Task<Void>{
 	private final Object syncObj = new Object();
 	
 	public MainCollector() {
 		super();
 	}
 	
-	private List<Item> itemList;
+	@Override
+	protected Void call() throws Exception {
+		collect();
+		return null;
+	}
+	private List<Item> itemList = new ArrayList<>();
 	public void collect(){
 		List<AppCollector> listApp = new ArrayList<>();
 		String [] collectors = {"com.rabduck.mutter.SHFolderCollector", "com.rabduck.mutter.PathFolderCollector"};
@@ -102,5 +109,6 @@ public class MainCollector {
 		}
 		return grepList;
 	}
+
 	
 }
