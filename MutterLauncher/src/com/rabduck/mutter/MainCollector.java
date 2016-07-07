@@ -36,7 +36,7 @@ public class MainCollector {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
-
+		
 		// ExecutorService executor = Executors.newSingleThreadExecutor();
 		ExecutorService executor = Executors.newFixedThreadPool(1);
 		
@@ -45,6 +45,9 @@ public class MainCollector {
 		}
 		
 		executor.shutdown();
+		
+		// ここのスレッド待ち＋その後の itemList 更新＋View 側への通知を分けて、
+		// ここで JAT を止めないようにしないといけない !!
 		try {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
