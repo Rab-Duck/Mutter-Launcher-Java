@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.fxml.FXMLLoader;
 
@@ -62,6 +64,12 @@ public class Main extends Application {
 				primaryStage.hide();
 	            t.consume();
 	        });
+			primaryStage.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
+				if(event.getCode() == KeyCode.ESCAPE){
+					primaryStage.hide();
+				}
+			});
+			
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Mutter Launcher@Java");
 			primaryStage.initStyle(StageStyle.UTILITY);
