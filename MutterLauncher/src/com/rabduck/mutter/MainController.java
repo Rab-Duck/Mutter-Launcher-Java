@@ -34,6 +34,8 @@ public class MainController implements Initializable{
 	@FXML
 	private Button buttonCancel;
 	@FXML
+	private Button btnUpdate;
+	@FXML
 	private Button btnExit;
 
 	private ObservableList<Item> items;
@@ -48,16 +50,22 @@ public class MainController implements Initializable{
 		items.clear();
 		items.addAll(collector.grep(searchStr));
 		itemListView.getSelectionModel().select(0);
+		btnUpdate.setDisable(false);
 	}
 	
 	private void collect(){
+		collector = new MainCollector();
 		if(collector != null){
+			btnUpdate.setDisable(true);
 			collector.setOnSucceeded(value -> {
 				System.out.println("collect thread is succeeded:" + value);
 				updateView(null);
 			});
 			collector.setOnFailed(value -> {
 				System.out.println("collect thread is failed:" + value);
+			});
+			collector.setOnScheduled(value -> {
+				System.out.println("collect thread is scheduled:" + value);
 			});
 		    Thread thread = new Thread(collector);
 		    thread.setDaemon(true);
@@ -69,7 +77,7 @@ public class MainController implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 		System.out.println("Controller Initialized!" + location + ", " + resources );
 		
-		collector = new MainCollector();
+		// collector = new MainCollector();
 		collect();
 		// collector.getAllItemList().stream().forEach(item -> {System.out.println(item.getItemName() + ":" + item.getItemPath());});
 		items = FXCollections.observableArrayList();
@@ -178,6 +186,12 @@ public class MainController implements Initializable{
 	public void onActionCancel(ActionEvent event) {
 		// buttonCancel.getScene().getWindow().hide();
 		if(stage != null){ stage.hide(); }
+	}
+
+	// Event Listener on Button[#btnUpdate].onAction
+	@FXML
+	public void onActionUpdate(ActionEvent event) {
+		collect();
 	}
 
 	// Event Listener on Button[#btnExit].onAction

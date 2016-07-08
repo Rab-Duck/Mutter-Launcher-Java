@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ListView?>
@@ -8,7 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="441.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rabduck.mutter.MainController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="200.0" minWidth="200.0" prefHeight="400.0" prefWidth="441.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rabduck.mutter.MainController">
    <children>
       <VBox layoutX="24.0" layoutY="24.0" prefHeight="349.0" prefWidth="395.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="24.0">
          <children>
@@ -17,14 +18,25 @@
                   <ComboBox fx:id="cmbbxSearchText" editable="true" onAction="#actionCmbbxSearchText" onKeyPressed="#onKeyPressedCmbbxSearchText" onKeyTyped="#onKeyTypedCmbbxSearchText" prefHeight="23.0" promptText="input search text" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
-            <ListView fx:id="itemListView" onKeyTyped="#onKeyTypedItemListView" minHeight="50.0" prefHeight="281.0" prefWidth="395.0" />
+            <ListView fx:id="itemListView" onKeyTyped="#onKeyTypedItemListView" prefHeight="1000.0" prefWidth="393.0" />
             <TextField fx:id="txtPathView" editable="false" />
-            <HBox alignment="BOTTOM_RIGHT" prefHeight="47.0" prefWidth="395.0">
+            <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
                <children>
                   <Button fx:id="buttonOk" minWidth="100.0" mnemonicParsing="false" onAction="#onActionOk" text="OK" />
                   <Button fx:id="buttonCancel" minWidth="100.0" mnemonicParsing="false" onAction="#onActionCancel" text="Cancel" />
-                  <Button fx:id="btnExit" mnemonicParsing="false" onAction="#onActionExit" text="Exit" />
                </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
+               <children>
+                  <Button fx:id="btnUpdate" mnemonicParsing="false" onAction="#onActionUpdate" prefWidth="100.0" text="Update" />
+                  <Button fx:id="btnExit" mnemonicParsing="false" onAction="#onActionExit" prefWidth="100.0" text="Exit" />
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
             </HBox>
          </children>
       </VBox>
