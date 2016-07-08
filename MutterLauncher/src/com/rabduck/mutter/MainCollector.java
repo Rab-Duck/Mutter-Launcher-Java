@@ -18,7 +18,7 @@ import javafx.concurrent.Task;
  * @author Rab-Duck
  *
  */
-public class MainCollector extends Task<Void>{
+public class MainCollector extends Task<MainCollector>{
 	private final Object syncObj = new Object();
 	
 	public MainCollector() {
@@ -26,9 +26,9 @@ public class MainCollector extends Task<Void>{
 	}
 	
 	@Override
-	protected Void call() throws Exception {
+	protected MainCollector call() throws Exception {
 		collect();
-		return null;
+		return this;
 	}
 	private List<Item> itemList = new ArrayList<>();
 	public void collect(){

@@ -15,12 +15,14 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.ScheduledService;
 import javafx.event.ActionEvent;
 
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class MainController implements Initializable{
 	@FXML
@@ -38,38 +40,38 @@ public class MainController implements Initializable{
 	@FXML
 	private Button btnExit;
 
-	private ObservableList<Item> items;
+	private ObservableList<Item> items = FXCollections.observableArrayList();
 
 		
+	private CollectorService collectorService = new CollectorService();
 	private MainCollector collector;
 	
 	private void updateView(String searchStr){
 		if(searchStr == null){
-			searchStr = cmbbxSearchText.getValue();
+			searchStr = cmbbxSearchText.getEditor().getText();
 		}
-		items.clear();
-		items.addAll(collector.grep(searchStr));
-		itemListView.getSelectionModel().select(0);
-		btnUpdate.setDisable(false);
+		if(collector != null){
+			items.clear();
+			items.addAll(collector.grep(searchStr));
+			itemListView.getSelectionModel().select(0);
+			btnUpdate.setDisable(false);
+		}
 	}
 	
+    class CollectorService extends ScheduledService<MainCollector> {
+        @Override
+        protected MainCollector createTask() {
+            return new MainCollector();
+        }
+    }
+    
 	private void collect(){
-		collector = new MainCollector();
-		if(collector != null){
-			btnUpdate.setDisable(true);
-			collector.setOnSucceeded(value -> {
-				System.out.println("collect thread is succeeded:" + value);
-				updateView(null);
-			});
-			collector.setOnFailed(value -> {
-				System.out.println("collect thread is failed:" + value);
-			});
-			collector.setOnScheduled(value -> {
-				System.out.println("collect thread is scheduled:" + value);
-			});
-		    Thread thread = new Thread(collector);
-		    thread.setDaemon(true);
-		    thread.start();
+		// collector = new MainCollector();
+		if(collectorService != null){
+			collectorService.restart();
+//		    Thread thread = new Thread(collector);
+//		    thread.setDaemon(true);
+//		    thread.start();
 		}
 	}
 	
@@ -77,11 +79,27 @@ public class MainController implements Initializable{
 	public void initialize(URL location, ResourceBundle resources) {
 		System.out.println("Controller Initialized!" + location + ", " + resources );
 		
+		itemListView.setItems(items);
+
 		// collector = new MainCollector();
+		collectorService.setDelay(Duration.ZERO);
+		collectorService.setPeriod(new Duration(1000*60*60*6));
+		collectorService.setOnSucceeded(value -> {
+			System.out.println("collect thread is succeeded:" + value);
+			collector = collectorService.getValue();
+			updateView(null);
+		});
+		collectorService.setOnFailed(value -> {
+			System.out.println("collect thread is failed:" + value);
+		});
+		collectorService.setOnScheduled(value -> {
+			System.out.println("collect thread is scheduled:" + value);
+		});
+		collectorService.setOnRunning(value -> {
+			btnUpdate.setDisable(true);
+		});
 		collect();
 		// collector.getAllItemList().stream().forEach(item -> {System.out.println(item.getItemName() + ":" + item.getItemPath());});
-		items = FXCollections.observableArrayList();
-		itemListView.setItems(items);
 
 		// reference:
 		// java - JavaFX - ComboBox listener for its texfield - Stack Overflow
