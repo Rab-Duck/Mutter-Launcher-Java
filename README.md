@@ -10,7 +10,7 @@ Mutter Launcher <http://hp.vector.co.jp/authors/VA022068/soft/bin/mlnch/>
 
 ## プロジェクトを動かすには？
 
-Eclipse + e(fx)clipse<http://www.eclipse.org/efxclipse/index.html> で作っています。 
+Eclipse + e(fx)clipse<http://www.eclipse.org/efxclipse/index.html> で作っています。  
 ソースの文字コードは UTF-8 に設定して下さい。  
 Main.java から実行して下さい。
 
