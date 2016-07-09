@@ -30,6 +30,8 @@ import com.melloware.jintellitype.JIntellitype;
 public class Main extends Application {
 	private TrayIcon icon;
 	private Stage primaryStage;
+	private EnvManager envmngr = EnvManager.getInstance();
+	
 	@Override
 	public void init() throws Exception {
 		System.out.println("Call Main::init!");
@@ -58,7 +60,7 @@ public class Main extends Application {
 			MainController controller = (MainController)loader.getController();
 			controller.setStage(primaryStage);
 
-			Scene scene = new Scene(root,422,386);
+			Scene scene = new Scene(root, envmngr.getIntProperty("MainWinWidth"),envmngr.getIntProperty("MainWinHeight"));
 			scene.getStylesheets().add(getClass().getResource("application.css").toExternalForm());
 			primaryStage.setOnCloseRequest((WindowEvent t) -> {
 				primaryStage.hide();
@@ -101,7 +103,7 @@ public class Main extends Application {
 		    tray.add(icon);
 
 		    // register Windows Hot Key
-		    JIntellitype.getInstance().registerHotKey(1, JIntellitype.MOD_WIN, (int)'C');
+		    JIntellitype.getInstance().registerHotKey(1, envmngr.getIntProperty("HotkeyMod"), envmngr.getIntProperty("HotkeyKey"));
 			JIntellitype.getInstance().addHotKeyListener(new HotkeyListener(){
 				@Override
 				public void onHotKey(int arg0) {

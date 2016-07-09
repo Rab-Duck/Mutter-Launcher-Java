@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>Mutter Launcher Environment Value</comment>
+	<entry key="MainWinWidth">400</entry>
+	<entry key="MainWinHeight">400</entry>
+	<entry key="CollectThreadNum">1</entry>
+	<entry key="HotkeyMod">8</entry>
+	<entry key="HotkeyKey">67</entry>
+</properties>
