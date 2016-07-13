@@ -8,6 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 /**
@@ -41,6 +42,9 @@ public class MainCollector extends Task<MainCollector>{
 			}
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
+			Platform.runLater(() -> {
+				ErrorDialog.showErrorDialog("Collector class not found:", e);
+			});
 			throw new RuntimeException(e);
 		}
 		
@@ -53,12 +57,13 @@ public class MainCollector extends Task<MainCollector>{
 		
 		executor.shutdown();
 		
-		// ここのスレッド待ち＋その後の itemList 更新＋View 側への通知を分けて、
-		// ここで JAT を止めないようにしないといけない !!
 		try {
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			Platform.runLater(() -> {
+				ErrorDialog.showErrorDialog("Collector class not found:", e);
+			});
 			throw new RuntimeException(e);
 		}
 		synchronized (syncObj) {

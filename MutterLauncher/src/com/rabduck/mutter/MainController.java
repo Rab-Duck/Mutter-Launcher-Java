@@ -104,7 +104,7 @@ public class MainController implements Initializable{
 			btnUpdate.setDisable(true);
 		});
 		collect();
-		// collector.getAllItemList().stream().forEach(item -> {logger.log(item.getItemName() + ":" + item.getItemPath());});
+		// collector.getAllItemList().stream().forEach(item -> {logger.log(Level.FINEST, item.getItemName() + ":" + item.getItemPath());});
 
 		// reference:
 		// java - JavaFX - ComboBox listener for its texfield - Stack Overflow
@@ -198,6 +198,7 @@ public class MainController implements Initializable{
 				items.get(selectedIndex).execute("");
 			} catch (ExecException e) {
 				e.printStackTrace();
+				ErrorDialog.showErrorDialog("Execute Error:", e);
 			}
 			stage.hide();
 			cmbbxSearchText.setValue("");
