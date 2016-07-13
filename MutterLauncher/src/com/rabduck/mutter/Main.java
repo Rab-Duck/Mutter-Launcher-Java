@@ -8,6 +8,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -28,19 +33,23 @@ import com.melloware.jintellitype.HotkeyListener;
 import com.melloware.jintellitype.JIntellitype;
 
 public class Main extends Application {
+
+	private static Logger logger;
+	
 	private TrayIcon icon;
 	private Stage primaryStage;
 	private EnvManager envmngr = EnvManager.getInstance();
 	
+	
 	@Override
 	public void init() throws Exception {
-		System.out.println("Call Main::init!");
+		logger.log(Level.INFO, "Call Main::init!");
 		super.init();
 	}
 
 	@Override
 	public void stop() throws Exception {
-		System.out.println("Call Main::stop!");
+		logger.log(Level.INFO, "Call Main::stop!");
 		// for kill awt thread
 		SystemTray.getSystemTray().remove(icon);
 		JIntellitype.getInstance().cleanUp();
@@ -49,6 +58,7 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
+		logger.log(Level.INFO, "Call Main::start!");
 		this.primaryStage = primaryStage;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -125,6 +135,12 @@ public class Main extends Application {
 	}
 	
 	public static void main(String[] args) {
+		try(InputStream in = Main.class.getClassLoader().getResourceAsStream("com/rabduck/mutter/logging.properties")){
+			LogManager.getLogManager().readConfiguration(in);
+		}catch (IOException e){
+			e.printStackTrace();
+		}
+		logger = Logger.getLogger(com.rabduck.mutter.Main.class.getName());
 		launch(args);
 	}
 }

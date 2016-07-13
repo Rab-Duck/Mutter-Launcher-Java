@@ -15,8 +15,13 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FileCollector implements AppCollector {
+
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.FileCollector.class.getName());
+
 	public FileCollector(String dirPath) throws IOException {
 		super();
 		this.dirPath = Paths.get(dirPath);
@@ -70,8 +75,8 @@ public class FileCollector implements AppCollector {
 						@Override
 						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 							if(attrs.isRegularFile() && Files.isReadable(file)){
-								// System.out.println(file.toAbsolutePath());
 								if(extMatcher == null || extMatcher.matches(file)){
+									logger.log(Level.FINEST, file.toAbsolutePath().toString());
 									items.add(new FileItem(file));
 								}
 							}
@@ -80,7 +85,7 @@ public class FileCollector implements AppCollector {
 
 						@Override
 						public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-							System.out.println("Failed:" + file.toAbsolutePath());
+							logger.log(Level.FINER, "Failed:" + file.toAbsolutePath());
 							return FileVisitResult.SKIP_SUBTREE;
 						}
 			});

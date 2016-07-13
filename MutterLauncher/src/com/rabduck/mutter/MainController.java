@@ -9,6 +9,8 @@ import javafx.scene.control.TextField;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -25,6 +27,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class MainController implements Initializable{
+
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());;
+
 	@FXML
 	private ComboBox<String> cmbbxSearchText;
 	@FXML
@@ -77,7 +82,7 @@ public class MainController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		System.out.println("Controller Initialized!" + location + ", " + resources );
+		logger.log(Level.FINE, "Controller Initialized!" + location + ", " + resources );
 		
 		itemListView.setItems(items);
 
@@ -85,47 +90,47 @@ public class MainController implements Initializable{
 		collectorService.setDelay(Duration.ZERO);
 		collectorService.setPeriod(new Duration(1000*60*60*6));
 		collectorService.setOnSucceeded(value -> {
-			System.out.println("collect thread is succeeded:" + value);
+			logger.log(Level.FINE, "collect thread is succeeded:" + value);
 			collector = collectorService.getValue();
 			updateView(null);
 		});
 		collectorService.setOnFailed(value -> {
-			System.out.println("collect thread is failed:" + value);
+			logger.log(Level.FINE, "collect thread is failed:" + value);
 		});
 		collectorService.setOnScheduled(value -> {
-			System.out.println("collect thread is scheduled:" + value);
+			logger.log(Level.FINE, "collect thread is scheduled:" + value);
 		});
 		collectorService.setOnRunning(value -> {
 			btnUpdate.setDisable(true);
 		});
 		collect();
-		// collector.getAllItemList().stream().forEach(item -> {System.out.println(item.getItemName() + ":" + item.getItemPath());});
+		// collector.getAllItemList().stream().forEach(item -> {logger.log(item.getItemName() + ":" + item.getItemPath());});
 
 		// reference:
 		// java - JavaFX - ComboBox listener for its texfield - Stack Overflow
 		// http://stackoverflow.com/questions/18657317/javafx-combobox-listener-for-its-texfield
 		cmbbxSearchText.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-		    System.out.println("cmbbx changed from " + oldValue + " to " + newValue);
+		    logger.log(Level.FINE, "cmbbx changed from " + oldValue + " to " + newValue);
 			updateView(newValue);
 		});
 		cmbbxSearchText.getEditor().setOnKeyPressed((event) -> {
-			System.out.println("onKeyPressed:" + event);
+			logger.log(Level.FINER, "onKeyPressed:" + event);
 			OnKeyPressedCommon(event);
 		});
 		cmbbxSearchText.getEditor().setOnKeyTyped((event) -> {
-			System.out.println("onKeyTyped:" + event);
+			logger.log(Level.FINE, "onKeyTyped:" + event);
 			if(event.getCode() == KeyCode.ENTER || event.getCharacter().equals("\n") || event.getCharacter().equals("\r")){
 				executeSelectedItem();
 			}
 		});
 		cmbbxSearchText.getEditor().setOnAction((event) -> {
-			System.out.println("OnAction editorProperty:" + event);
+			logger.log(Level.FINEST, "OnAction editorProperty:" + event);
 			// executeSelectedItem();
 		});
 		cmbbxSearchText.valueProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue ov, String t, String t1) {
-				 System.out.println(ov); System.out.println(t); System.out.println(t1);
+				 logger.log(Level.FINEST, ov.toString()); logger.log(Level.FINEST,t); logger.log(Level.FINEST,t1);
 			}
 		});
 		
@@ -144,15 +149,15 @@ public class MainController implements Initializable{
 	// Event Listener on CombBox[#cmbbxSearchText].onAction
 	@FXML
 	public void actionCmbbxSearchText(ActionEvent event) {
-		System.out.println("actionCmbbxSearchText:" + event);
+		logger.log(Level.FINEST, "actionCmbbxSearchText:" + event);
 	}
 	@FXML
 	public void onKeyPressedCmbbxSearchText(KeyEvent event){
-		System.out.println("onKeyPressedCmbbxSearchText:" + event);
+		logger.log(Level.FINEST, "onKeyPressedCmbbxSearchText:" + event);
 	}
 	@FXML
 	public void onKeyTypedCmbbxSearchText(KeyEvent event){
-		System.out.println("onKeyTypedCmbbxSearchText:" + event);
+		logger.log(Level.FINEST, "onKeyTypedCmbbxSearchText:" + event);
 	}
 	
 	private void OnKeyPressedCommon(KeyEvent event){
@@ -173,7 +178,7 @@ public class MainController implements Initializable{
 	}
 	
 	public void onKeyTypedItemListView(KeyEvent event){
-		System.out.println("onKeyTypedItemListView:" + event);
+		logger.log(Level.FINER, "onKeyTypedItemListView:" + event);
 		if(event.getCode() == KeyCode.ENTER || event.getCharacter().equals("\n") || event.getCharacter().equals("\r")){
 			executeSelectedItem();
 		}
@@ -187,16 +192,16 @@ public class MainController implements Initializable{
 	
 	private void executeSelectedItem(){
 		int selectedIndex = itemListView.getSelectionModel().getSelectedIndex();
-		System.out.println("selectedIndex:" + selectedIndex);
+		logger.log(Level.FINE, "selectedIndex:" + selectedIndex);
 		if(selectedIndex >= 0){
 			try {
 				items.get(selectedIndex).execute("");
 			} catch (ExecException e) {
 				e.printStackTrace();
 			}
+			stage.hide();
+			cmbbxSearchText.setValue("");
 		}
-		stage.hide();
-		cmbbxSearchText.setValue("");
 	}
 	
 	// Event Listener on Button[#buttonCancel].onAction

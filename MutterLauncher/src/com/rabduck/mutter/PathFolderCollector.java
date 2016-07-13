@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * 
@@ -14,6 +16,9 @@ import java.util.List;
  *
  */
 public class PathFolderCollector implements AppCollector {
+
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());
+	
 	private String [] pathFolders = null;
 	
 	public PathFolderCollector(){
@@ -38,7 +43,7 @@ public class PathFolderCollector implements AppCollector {
 				fc.collect();
 				items.addAll(fc.getItemList());
 			} catch (IOException e) {
-				System.out.println("PATH Folder not exists: " + pathFolder);
+				logger.log(Level.INFO, "PATH Folder not exists: " + pathFolder);
 				// e.printStackTrace();
 			}
 		}

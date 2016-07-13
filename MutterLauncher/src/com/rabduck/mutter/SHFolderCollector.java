@@ -4,12 +4,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author rab-duck
  *
  */
 public class SHFolderCollector implements AppCollector  {
+
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());
+	
 	private String [] shFolders = null;
 	
 	public SHFolderCollector(){
@@ -55,7 +60,7 @@ public class SHFolderCollector implements AppCollector  {
 				fc.collect();
 				items.addAll(fc.getItemList());
 			} catch (IOException e) {
-				System.out.println("Special Folder not exists: " + shFolder);
+				logger.log(Level.INFO, "Special Folder not exists: " + shFolder);
 				// e.printStackTrace();
 			}
 		}

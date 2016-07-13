@@ -72,21 +72,6 @@ public class MainCollector extends Task<MainCollector>{
 		listApp = null;
 	}
 	
-//	// FileCollector fc;
-//	// String [] paths = {"C:\\Windows", "d:\\home"};
-//	String [] paths = {"C:\\Program Files\\Apache Software Foundation\\Apache Tomcat 8.0.27\\conf", ""};
-//	// String [] paths = {"%PUBLIC%\\Desktop"};
-//
-//	for (String path : paths) {
-//		try {
-//			listApp.add(new FileCollector(path));
-//		} catch (IOException e) {
-//			System.out.println("not exists: " + path);
-//			e.printStackTrace();
-//			throw new RuntimeException(e);
-//		}
-//	}
-
 	public List<Item> getAllItemList(){
 		synchronized (syncObj) {
 			return new ArrayList<Item>(itemList);
@@ -98,7 +83,6 @@ public class MainCollector extends Task<MainCollector>{
 			return getAllItemList();
 		}
 		
-		/* TODO grep implimentation */
 		List<Item> grepList = new ArrayList<>();
 		
 		synchronized (syncObj) {
