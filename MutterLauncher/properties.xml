@@ -7,4 +7,5 @@
 	<entry key="CollectThreadNum">1</entry>
 	<entry key="HotkeyMod">8</entry>
 	<entry key="HotkeyKey">67</entry>
+	<entry key="ResearchInterval">360</entry>
 </properties>
