@@ -73,6 +73,9 @@ public class FileItem implements Item {
 			return icon;
 		}
 		
+		// reference: 
+		//		How do I get a file's icon in Java? - Stack Overflow
+		//		http://stackoverflow.com/questions/4363251/how-do-i-get-a-files-icon-in-java
 		return FileSystemView.getFileSystemView().getSystemIcon(new File(getItemPath()));
 		// for OS X ?
         // JFileChooser jfc = new JFileChooser();
