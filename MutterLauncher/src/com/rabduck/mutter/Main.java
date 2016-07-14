@@ -49,11 +49,11 @@ public class Main extends Application {
 
 	@Override
 	public void stop() throws Exception {
+		super.stop();
 		logger.log(Level.INFO, "Call Main::stop!");
-		// for kill awt thread
+		// for killing awt thread
 		SystemTray.getSystemTray().remove(icon);
 		JIntellitype.getInstance().cleanUp();
-		super.stop();
 	}
 
 	@Override
@@ -122,6 +122,7 @@ public class Main extends Application {
 			});
 			
 		} catch(Exception e) {
+			ErrorDialog.showErrorDialog("Application failed to initialize", e);
 			e.printStackTrace();
 			System.exit(-1);
 		}

@@ -5,12 +5,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -18,12 +25,14 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
+import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 
 public class MainController implements Initializable{
@@ -83,7 +92,13 @@ public class MainController implements Initializable{
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		logger.log(Level.FINE, "Controller Initialized!" + location + ", " + resources );
-		
+
+		itemListView.setCellFactory(new Callback<ListView<Item>, ListCell<Item>>() {
+		     @Override
+		     public ListCell<Item> call(ListView<Item> list) {
+		         return new ItemFormatCell();
+		     }
+		 });
 		itemListView.setItems(items);
 
 		// collector = new MainCollector();
@@ -142,6 +157,7 @@ public class MainController implements Initializable{
 								itemListView.getSelectionModel().selectedItemProperty().get().getItemPath());
 		});
 		
+		
 		// unused by NullPointerException 
 		// primaryStage = (Stage)buttonCancel.getScene().getWindow();
 	}
@@ -196,12 +212,12 @@ public class MainController implements Initializable{
 		if(selectedIndex >= 0){
 			try {
 				items.get(selectedIndex).execute("");
+				stage.hide();
+				cmbbxSearchText.setValue("");
 			} catch (ExecException e) {
 				e.printStackTrace();
 				ErrorDialog.showErrorDialog("Execute Error:", e);
 			}
-			stage.hide();
-			cmbbxSearchText.setValue("");
 		}
 	}
 	
@@ -222,10 +238,35 @@ public class MainController implements Initializable{
 	@FXML
 	public void onActionExit(ActionEvent event) {
 		Platform.exit();
+		// System.exit(0);
 	}
 
 	private Stage stage;
 	public void setStage(Stage stage){
 		this.stage = stage;
 	}
+}
+
+class ItemFormatCell extends ListCell<Item> {
+    public ItemFormatCell() {    }
+      
+    @Override protected void updateItem(Item item, boolean empty) {
+        super.updateItem(item, empty);
+        
+        if(empty || item == null){
+        	 setText(null);
+        	 setGraphic(null);
+        	 return;
+        }
+        
+        setText(item.getItemName());
+        setContentDisplay(ContentDisplay.LEFT);
+        SwingNode sn = new SwingNode();
+        // sn.setContent(new JLabel(item.getIcon()));
+        
+        SwingUtilities.invokeLater(() -> {
+        	sn.setContent(new JLabel(item.getIcon()));
+        });
+        setGraphic(sn);
+    }
 }
