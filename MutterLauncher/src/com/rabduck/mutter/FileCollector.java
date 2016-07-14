@@ -74,7 +74,7 @@ public class FileCollector implements AppCollector {
 					new SimpleFileVisitor<Path>() {
 						@Override
 						public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-							if(attrs.isRegularFile() && Files.isReadable(file)){
+							if(Files.isReadable(file) && !Files.isHidden(file)){
 								if(extMatcher == null || extMatcher.matches(file)){
 									logger.log(Level.FINEST, file.toAbsolutePath().toString());
 									items.add(new FileItem(file));
