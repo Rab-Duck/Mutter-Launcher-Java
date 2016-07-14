@@ -62,7 +62,7 @@ public class MainCollector extends Task<MainCollector>{
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 			Platform.runLater(() -> {
-				ErrorDialog.showErrorDialog("Collector class not found:", e);
+				ErrorDialog.showErrorDialog("Collector thread await error:", e);
 			});
 			throw new RuntimeException(e);
 		}
