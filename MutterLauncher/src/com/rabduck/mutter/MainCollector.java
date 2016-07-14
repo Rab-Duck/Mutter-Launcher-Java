@@ -42,9 +42,7 @@ public class MainCollector extends Task<MainCollector>{
 			}
 		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
 			e.printStackTrace();
-			Platform.runLater(() -> {
-				ErrorDialog.showErrorDialog("Collector class not found:", e);
-			});
+			ErrorDialog.showErrorDialog("Collector class not found:", e, true);
 			throw new RuntimeException(e);
 		}
 		
@@ -61,9 +59,7 @@ public class MainCollector extends Task<MainCollector>{
 			executor.awaitTermination(Long.MAX_VALUE, TimeUnit.SECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			Platform.runLater(() -> {
-				ErrorDialog.showErrorDialog("Collector thread await error:", e);
-			});
+			ErrorDialog.showErrorDialog("Collector thread await error:", e, true);
 			throw new RuntimeException(e);
 		}
 		synchronized (syncObj) {
