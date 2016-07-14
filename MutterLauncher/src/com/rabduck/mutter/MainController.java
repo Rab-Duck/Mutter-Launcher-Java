@@ -10,11 +10,13 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.Icon;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
@@ -25,6 +27,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.ScheduledService;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.embed.swing.SwingNode;
 import javafx.event.ActionEvent;
 
@@ -239,7 +242,6 @@ public class MainController implements Initializable{
 	@FXML
 	public void onActionExit(ActionEvent event) {
 		Platform.exit();
-		// System.exit(0);
 	}
 
 	private Stage stage;
@@ -252,6 +254,8 @@ class ItemFormatCell extends ListCell<Item> {
     public ItemFormatCell() {    }
       
     @Override protected void updateItem(Item item, boolean empty) {
+    	final boolean bUseJLabel = false;
+    	
         super.updateItem(item, empty);
         
         if(empty || item == null){
@@ -262,12 +266,23 @@ class ItemFormatCell extends ListCell<Item> {
         
         setText(item.getItemName());
         setContentDisplay(ContentDisplay.LEFT);
-        SwingNode sn = new SwingNode();
-        // sn.setContent(new JLabel(item.getIcon()));
-        
-        SwingUtilities.invokeLater(() -> {
-        	sn.setContent(new JLabel(item.getIcon()));
-        });
-        setGraphic(sn);
+
+        if(bUseJLabel){
+	        SwingNode sn = new SwingNode();
+	        // sn.setContent(new JLabel(item.getIcon()));
+	        SwingUtilities.invokeLater(() -> {
+	        	sn.setContent(new JLabel(item.getIcon()));
+	        });
+	        setGraphic(sn);
+        }
+        else{
+            // reference: 
+			// 	JavaFX file listview with icon and file name - Stack Overflow
+			// 	http://stackoverflow.com/questions/28034432/javafx-file-listview-with-icon-and-file-name        	
+            Icon icon = item.getIcon();
+            BufferedImage bufferedImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+            icon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);
+            setGraphic(new ImageView(SwingFXUtils.toFXImage(bufferedImage, null)));        	
+        }
     }
 }
