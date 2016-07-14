@@ -38,7 +38,7 @@ public class Main extends Application {
 	
 	private TrayIcon icon;
 	private Stage primaryStage;
-	private EnvManager envmngr = EnvManager.getInstance();
+	private EnvManager envmngr;
 	
 	
 	@Override
@@ -59,6 +59,16 @@ public class Main extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		logger.log(Level.INFO, "Call Main::start!");
+		
+		try {
+			envmngr = EnvManager.getInstance();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Env file I/O error:", e);
+			e.printStackTrace();
+			ErrorDialog.showErrorDialog("Env file I/O error:", e, false);
+			System.exit(-1);
+		}
+		
 		this.primaryStage = primaryStage;
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("Main.fxml"));
@@ -122,7 +132,7 @@ public class Main extends Application {
 			});
 			
 		} catch(Exception e) {
-			ErrorDialog.showErrorDialog("Application failed to initialize", e);
+			ErrorDialog.showErrorDialog("Application failed to initialize", e, false);
 			e.printStackTrace();
 			System.exit(-1);
 		}

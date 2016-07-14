@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -41,7 +42,7 @@ import javafx.util.Duration;
 public class MainController implements Initializable{
 
 	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());
-	private static EnvManager env = EnvManager.getInstance();
+	private static EnvManager envmngr;
 
 	@FXML
 	private ComboBox<String> cmbbxSearchText;
@@ -95,8 +96,18 @@ public class MainController implements Initializable{
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		logger.log(Level.FINE, "Controller Initialized!" + location + ", " + resources );
+		logger.log(Level.INFO, "Controller Initialized!" + location + ", " + resources );
 
+		try {
+			envmngr = EnvManager.getInstance();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Env file I/O error:", e);
+			e.printStackTrace();
+			ErrorDialog.showErrorDialog("Env file I/O error:", e, false);
+			System.exit(-1);
+		}
+
+		
 		itemListView.setCellFactory(new Callback<ListView<Item>, ListCell<Item>>() {
 		     @Override
 		     public ListCell<Item> call(ListView<Item> list) {
@@ -107,7 +118,7 @@ public class MainController implements Initializable{
 
 		// collector = new MainCollector();
 		collectorService.setDelay(Duration.ZERO);
-		collectorService.setPeriod(new Duration(1000*60*env.getIntProperty("ResearchInterval")));
+		collectorService.setPeriod(new Duration(1000*60*envmngr.getIntProperty("ResearchInterval")));
 		collectorService.setOnSucceeded(value -> {
 			logger.log(Level.FINE, "collect thread is succeeded:" + value);
 			collector = collectorService.getValue();
@@ -220,7 +231,7 @@ public class MainController implements Initializable{
 				cmbbxSearchText.setValue("");
 			} catch (ExecException e) {
 				e.printStackTrace();
-				ErrorDialog.showErrorDialog("Execute Error:", e);
+				ErrorDialog.showErrorDialog("Execute Error:", e, false);
 			}
 		}
 	}

@@ -4,7 +4,13 @@
 package com.rabduck.mutter;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.InvalidPropertiesFormatException;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Rab-Duck
@@ -12,30 +18,56 @@ import java.util.Properties;
  * reference: https://www.mlab.im.dendai.ac.jp/~yamada/java/properties/
  */
 public class EnvManager {
-    private Properties conf;
-    private String filename = "properties.xml";
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.EnvManager.class.getName());
+
+	private Properties conf;
+    private String propsFilename = "properties.xml";
     
-    public static EnvManager envmngr = new EnvManager();
-    public static EnvManager getInstance(){
+    public static EnvManager envmngr;
+    public static EnvManager getInstance() throws IOException{
+    	if(envmngr != null){
+        	return envmngr;    		
+    	}
+    	envmngr = new EnvManager();
     	return envmngr;
     }
 
-    private EnvManager(){
+    private EnvManager() throws IOException{
+    	LoadDefaultProperties();
+    	LoadPersonalProperties();
+    }
+    private void LoadDefaultProperties() throws IOException{
         conf = new Properties();
-        try {
-            conf.loadFromXML(new FileInputStream(filename));
-        } catch (IOException e) {
-            System.err.println("Cannot open " + filename + ".");
-            e.printStackTrace();
-        }
+        conf.loadFromXML(new FileInputStream(propsFilename));
+    }
+    private void LoadPersonalProperties() throws IOException{
+    	String userHome = System.getProperty("user.home");
+    	String envDir = userHome + "\\MutterLauncher";
+        propsFilename = envDir + "\\" + propsFilename;
+    	Path envPath = Paths.get(envDir);
+    	
+    	if(Files.isDirectory(envPath)){
+            Properties _conf = new Properties();
+            try{
+	            _conf.loadFromXML(new FileInputStream(propsFilename));
+	            conf = _conf;
+            }catch(IOException e){
+                logger.log(Level.WARNING, "Can't read personal env file:" + propsFilename, e);
+            }
+    	}
+    	else{
+			Files.createDirectory(envPath);
+    	}
+    	
+    	storeToXML();
     }
 
     public Integer getIntProperty(String key) {
         if(conf.containsKey(key))
             return Integer.parseInt(conf.getProperty(key));
         else {
-            System.err.println("Key not found: " + key);
-            return null;
+            logger.log(Level.SEVERE, "Key not found: " + key);
+            throw new IllegalArgumentException("Key not found: " + key);
         }
     }
     
@@ -43,29 +75,27 @@ public class EnvManager {
         if(conf.containsKey(key))
             return conf.getProperty(key);
         else {
-            System.err.println("Key not found: " + key);
-            return "";
+        	logger.log(Level.SEVERE, "Key not found: " + key);
+            throw new IllegalArgumentException("Key not found: " + key);
         }
     }
 
-    public void addProperty(String key, Integer value) {
-    	addProperty(key, value.toString());
+    public void setProperty(String key, Integer value) {
+    	setProperty(key, value.toString());
     }
 
-    public void addProperty(String key, String value) {
-        if(conf.containsKey(key))
-            System.err.println("Key already exists: " + key);
-        else {
-            conf.setProperty(key, value);
-        }
+    public void setProperty(String key, String value) {
+        conf.setProperty(key, value);
+        storeToXML();
     }
 
     public void storeToXML() {
         try {
-            conf.storeToXML(new FileOutputStream(filename), "Mutter Launcher Environment Value");
+            conf.storeToXML(new FileOutputStream(propsFilename), "Mutter Launcher Environment Value");
         } catch (IOException e) {
-            System.err.println("Cannot open " + filename + ".");
+        	logger.log(Level.SEVERE, "Cannot open " + propsFilename + ".");
             e.printStackTrace();
+            ErrorDialog.showErrorDialog("Env file write error:", "Cannot open " + propsFilename + ".", true);
         }
     }
 }
