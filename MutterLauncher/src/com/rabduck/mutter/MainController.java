@@ -37,7 +37,8 @@ import javafx.util.Duration;
 
 public class MainController implements Initializable{
 
-	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());;
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());
+	private static EnvManager env = EnvManager.getInstance();
 
 	@FXML
 	private ComboBox<String> cmbbxSearchText;
@@ -103,7 +104,7 @@ public class MainController implements Initializable{
 
 		// collector = new MainCollector();
 		collectorService.setDelay(Duration.ZERO);
-		collectorService.setPeriod(new Duration(1000*60*60*6));
+		collectorService.setPeriod(new Duration(1000*60*env.getIntProperty("ResearchInterval")));
 		collectorService.setOnSucceeded(value -> {
 			logger.log(Level.FINE, "collect thread is succeeded:" + value);
 			collector = collectorService.getValue();
