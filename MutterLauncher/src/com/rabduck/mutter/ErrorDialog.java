@@ -12,23 +12,13 @@ import javafx.scene.control.TextArea;
 public class ErrorDialog {
 
 	public static void showErrorDialog(String msg, String detail, boolean runLater){
-		Alert alert = new Alert(AlertType.ERROR);
-		 
-		// prepare expandable content
-		TextArea textArea = new TextArea(detail);
-		alert.getDialogPane().setExpandableContent(textArea);
-		 
-		alert.setTitle("ERROR");
-		alert.setHeaderText("Application Error");
-		alert.setContentText(msg);
-
 		if(runLater){
 			Platform.runLater(() -> {
-				alert.showAndWait();	
+				showDialogMain(msg, detail);
 			});
 		}
 		else{
-			alert.showAndWait();	
+			showDialogMain(msg, detail);
 		}
 	}
 	
@@ -39,5 +29,17 @@ public class ErrorDialog {
 		StringWriter errors = new StringWriter();
 		e.printStackTrace(new PrintWriter(errors));
 		showErrorDialog(msg, errors.toString(), runLater);
-	}	
+	}
+	
+	private static void showDialogMain(String msg, String detail){
+		Alert alert = new Alert(AlertType.ERROR);
+		// prepare expandable content
+		TextArea textArea = new TextArea(detail);
+		alert.getDialogPane().setExpandableContent(textArea);
+		 
+		alert.setTitle("ERROR");
+		alert.setHeaderText("Application Error");
+		alert.setContentText(msg);
+		alert.showAndWait();	
+	}
 }
