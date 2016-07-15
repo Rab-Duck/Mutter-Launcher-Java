@@ -1,12 +1,18 @@
 package com.rabduck.mutter;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -20,10 +26,22 @@ import javafx.concurrent.Task;
  *
  */
 public class MainCollector extends Task<MainCollector>{
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainCollector.class.getName());
+	
 	private final Object syncObj = new Object();
 	
+	private int execLogIndex = 0;
+	private EnvManager envmngr;
 	public MainCollector() {
 		super();
+		try {
+			envmngr = EnvManager.getInstance();
+		} catch (IOException e) {
+			logger.log(Level.SEVERE, "Env file I/O error:", e);
+			e.printStackTrace();
+			ErrorDialog.showErrorDialog("Env file I/O error:", e, false);
+			System.exit(-1);
+		}
 	}
 	
 	@Override
@@ -66,6 +84,7 @@ public class MainCollector extends Task<MainCollector>{
 			itemList = null;
 			itemList = new ArrayList<>();
 			for (AppCollector app : listApp) {
+				itemList.addAll(envmngr.getExecHistory());
 				itemList.addAll(app.getItemList());
 			}			
 		}
@@ -79,7 +98,9 @@ public class MainCollector extends Task<MainCollector>{
 		}
 	}
 	
+	static final boolean bUseParallel = false; 
 	public List<Item> grep(String grepStr){
+
 		if(grepStr == null || grepStr.equals("")){
 			return getAllItemList();
 		}
@@ -87,13 +108,58 @@ public class MainCollector extends Task<MainCollector>{
 		List<Item> grepList = new ArrayList<>();
 		
 		synchronized (syncObj) {
-			itemList.parallelStream()
-				// .filter(item -> {return item.getItemName().contains(grepStr);})
-				.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
+			if(bUseParallel){
+				itemList.parallelStream()
+				.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
+				// .filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
 				.forEach(item -> {grepList.add(item);});
+			}
+			else{
+				itemList.stream()
+				.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
+				// .filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
+				.forEach(item -> {grepList.add(item);});
+			}
 		}
 		return grepList;
 	}
 
-	
+	public void setExecHistory(Item execItem){
+		int i = 0;
+		int historyMax = envmngr.getIntProperty("HistoryMax");
+		List<Item> historyList = new ArrayList<>();
+		for (ListIterator<Item> iterator = itemList.listIterator(); iterator.hasNext();) {
+			Item itrItem = iterator.next();
+			if(itrItem.getType() >= Item.TYPE_FIX){
+				continue;
+			}
+			else if(i == 0 && 
+					(itrItem.getType() == Item.TYPE_HISTORY || itrItem.getType() == Item.TYPE_NORMAL)){
+				Item historyItem = execItem.copy();
+				historyItem.setType(Item.TYPE_HISTORY);
+				iterator.previous();
+				iterator.add(historyItem);
+				iterator.next();
+				historyList.add(historyItem);
+				i++;
+			}
+			if(itrItem.getType() == Item.TYPE_HISTORY){
+				if(itrItem.historyEquals(execItem)){
+					iterator.remove();
+					continue;
+				}
+				else if(++i > historyMax){
+					iterator.remove();
+				}else{
+					historyList.add(itrItem);
+				}
+				continue;
+			}
+			if(itrItem.getType() == Item.TYPE_NORMAL){
+				break;
+			}
+		}
+		envmngr.setExecHistory(historyList);
+
+	}
 }

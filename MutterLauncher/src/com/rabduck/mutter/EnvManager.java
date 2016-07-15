@@ -7,7 +7,10 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.InvalidPropertiesFormatException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +25,8 @@ public class EnvManager {
 
 	private Properties conf;
     private String propsFilename = "properties.xml";
+	private String historyFilename = "HistoryList.obj";
+    private String envDir;
     
     public static EnvManager envmngr;
     public static EnvManager getInstance() throws IOException{
@@ -42,15 +47,19 @@ public class EnvManager {
     }
     private void LoadPersonalProperties() throws IOException{
     	String userHome = System.getProperty("user.home");
-    	String envDir = userHome + "\\MutterLauncher";
+    	envDir = userHome + "\\MutterLauncher";
         propsFilename = envDir + "\\" + propsFilename;
+        historyFilename = envDir + "\\" + historyFilename;
+
     	Path envPath = Paths.get(envDir);
     	
     	if(Files.isDirectory(envPath)){
             Properties _conf = new Properties();
             try{
 	            _conf.loadFromXML(new FileInputStream(propsFilename));
-	            conf = _conf;
+	            for (String key : _conf.stringPropertyNames()) {
+					conf.setProperty(key, _conf.getProperty(key));
+				}
             }catch(IOException e){
                 logger.log(Level.WARNING, "Can't read personal env file:" + propsFilename, e);
             }
@@ -93,9 +102,34 @@ public class EnvManager {
         try {
             conf.storeToXML(new FileOutputStream(propsFilename), "Mutter Launcher Environment Value");
         } catch (IOException e) {
-        	logger.log(Level.SEVERE, "Cannot open " + propsFilename + ".");
-            e.printStackTrace();
-            ErrorDialog.showErrorDialog("Env file write error:", "Cannot open " + propsFilename + ".", true);
+        	logger.log(Level.WARNING, "Cann't write " + propsFilename + ".", e);
+            // e.printStackTrace();
+            ErrorDialog.showErrorDialog("Env file write error:" + propsFilename, e, true);
         }
+    }
+    
+    public void setExecHistory(List<Item> historyList){
+
+    	try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(historyFilename)))) {
+			oos.writeObject(historyList);
+        } catch (IOException e) {
+        	logger.log(Level.SEVERE, "Cann't write " + historyFilename + ".", e);
+            ErrorDialog.showErrorDialog("History file write error:" + historyFilename, e, true);
+        }
+		return;
+    }
+
+    public List<Item> getExecHistory(){
+    	List<Item> historyList= new ArrayList<>();
+    	if(!Files.exists(Paths.get(historyFilename))){
+    		return historyList;
+    	}
+    	try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(historyFilename)))) {
+    		historyList = (List<Item>)ois.readObject();
+        } catch (Exception e) {
+        	logger.log(Level.SEVERE, "Cann't read " + envDir + historyFilename + ".", e);
+            ErrorDialog.showErrorDialog("History file read error:" + historyFilename, e, true);
+        }
+		return historyList;
     }
 }

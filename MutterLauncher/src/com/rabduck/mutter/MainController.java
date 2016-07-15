@@ -227,8 +227,10 @@ public class MainController implements Initializable{
 		if(selectedIndex >= 0){
 			try {
 				items.get(selectedIndex).execute("");
+				collector.setExecHistory(items.get(selectedIndex));
 				stage.hide();
 				cmbbxSearchText.setValue("");
+				updateView("");
 			} catch (ExecException e) {
 				e.printStackTrace();
 				ErrorDialog.showErrorDialog("Execute Error:", e, false);

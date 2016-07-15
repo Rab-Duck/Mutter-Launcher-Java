@@ -20,10 +20,10 @@ public class SHFolderCollector implements AppCollector  {
 	public SHFolderCollector(){
 		String [] folderlist = {
 				"%APPDATA%\\Microsoft\\Internet Explorer\\Quick Launch",
+				"%ProgramData%\\Microsoft\\Windows\\Start Menu",
+				"%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu",
 				"%PUBLIC%\\Desktop",
 				"%USERPROFILE%\\Desktop", 
-				"%ProgramData%\\Microsoft\\Windows\\Start Menu",
-				"%USERPROFILE%\\AppData\\Roaming\\Microsoft\\Windows\\Start Menu"
 		};
 		String [] envnames = {"USERPROFILE", "PUBLIC", "ProgramData", "APPDATA"};
 		HashMap<String, String> envmap = new HashMap<>();

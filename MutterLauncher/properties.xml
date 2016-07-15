@@ -4,8 +4,9 @@
 <comment>Mutter Launcher Environment Value</comment>
 	<entry key="MainWinWidth">400</entry>
 	<entry key="MainWinHeight">400</entry>
-	<entry key="CollectThreadNum">1</entry>
+	<entry key="CollectThreadNum">2</entry>
 	<entry key="HotkeyMod">8</entry>
 	<entry key="HotkeyKey">67</entry>
 	<entry key="ResearchInterval">360</entry>
+	<entry key="HistoryMax">50</entry>
 </properties>
