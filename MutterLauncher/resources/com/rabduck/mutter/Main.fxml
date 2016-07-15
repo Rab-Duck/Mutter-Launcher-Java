@@ -18,7 +18,7 @@
                   <ComboBox fx:id="cmbbxSearchText" editable="true" onAction="#actionCmbbxSearchText" onKeyPressed="#onKeyPressedCmbbxSearchText" onKeyTyped="#onKeyTypedCmbbxSearchText" prefHeight="23.0" promptText="input search text" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
-            <ListView fx:id="itemListView" onKeyTyped="#onKeyTypedItemListView" prefHeight="1000.0" prefWidth="393.0" />
+            <ListView fx:id="itemListView" onKeyTyped="#onKeyTypedItemListView" onMouseClicked="#onMouseClickedListView" prefHeight="1000.0" prefWidth="393.0" />
             <TextField fx:id="txtPathView" editable="false" />
             <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
                <children>

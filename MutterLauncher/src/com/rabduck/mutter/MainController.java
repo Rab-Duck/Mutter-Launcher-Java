@@ -35,6 +35,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ListView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -211,6 +212,14 @@ public class MainController implements Initializable{
 	public void onKeyTypedItemListView(KeyEvent event){
 		logger.log(Level.FINER, "onKeyTypedItemListView:" + event);
 		if(event.getCode() == KeyCode.ENTER || event.getCharacter().equals("\n") || event.getCharacter().equals("\r")){
+			executeSelectedItem();
+		}
+	}
+	
+	// onMouseClicked="#onMouseClickedListView"
+	public void onMouseClickedListView(MouseEvent event){
+		logger.log(Level.FINER, "onMouseClickedListView:" + event);
+		if(event.getClickCount() >= 2){
 			executeSelectedItem();
 		}
 	}

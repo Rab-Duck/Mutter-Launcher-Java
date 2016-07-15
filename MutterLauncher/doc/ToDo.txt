@@ -1,19 +1,24 @@
 ■ 未
-・環境設定値の保存のタイミングの決定と保存の実装
+・一度、ソースの整理
+・テスト実装
 ・properties.xml の絶対パス対応
-・ListView でのアイコン表示（ ListCell#updateItem() の実装＋JFileChooser#getIcon() ？）
 ・タスクトレイのアイコン変更
 ・タスクトレイのメニュー表示
-・任意のパス設定
+・任意のディレクトリ設定
 ・Google 検索などの固定表示 Item
-・起動履歴
 ・入力履歴（コンボボックス）
 ・動作設定用ダイアログの導入
+・環境設定値の保存のタイミングの決定と保存の実装
 ・検索方法の追加（スキップマッチング・前方一致・後方一致）
 ・全般的にエラー処理が甘い
 ・project 設定, build の構成（特に JIntellitype.dll の扱い）
 
 ■ 済
+・ListView でのダブルクリック→実行の実装
+・表示位置の保存・リストア
+・起動履歴
+・JLabel を使うと EDT が終わらない問題
+・ListView でのアイコン表示（ ListCell#updateItem() の実装＋JFileChooser#getIcon() ？）
 ・エラー時用のダイアログを作る（Exception 内容を詳細表示付き）
 ・ログ出力を System.out から Logger に変更
 ・動作設定用プロパティファイルなどを導入
