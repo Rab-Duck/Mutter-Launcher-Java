@@ -91,11 +91,24 @@ public class Main extends Application {
 					primaryStage.hide();
 				}
 			});
-			
+			primaryStage.setOnHiding(event -> {
+				envmngr.setProperty("WinPosX", (int)primaryStage.getX());
+				envmngr.setProperty("WinPosY", (int)primaryStage.getY());
+			});
+
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Mutter Launcher@Java");
 			primaryStage.initStyle(StageStyle.UTILITY);
-			primaryStage.show();
+			try{
+				primaryStage.setX(envmngr.getIntProperty("WinPosX"));
+				primaryStage.setY(envmngr.getIntProperty("WinPosY"));
+			}catch(IllegalArgumentException e){
+				primaryStage.centerOnScreen();
+			}
+			if(envmngr.getBooleanProperty("InitShow")){
+				primaryStage.show();
+			}
+			
 			
 			// reference:
 			// awt - JavaFX app in System Tray - Stack Overflow
@@ -140,6 +153,12 @@ public class Main extends Application {
 	
 	private void runLaterShow(){
 		Platform.runLater(() -> {
+			try{
+				primaryStage.setX(envmngr.getIntProperty("WinPosX"));
+				primaryStage.setY(envmngr.getIntProperty("WinPosY"));
+			}catch(IllegalArgumentException e){
+				primaryStage.centerOnScreen();
+			}
 			primaryStage.show();
 			primaryStage.toFront();
 		});		

@@ -71,6 +71,15 @@ public class EnvManager {
     	storeToXML();
     }
 
+    public Boolean getBooleanProperty(String key) {
+        if(conf.containsKey(key))
+            return Boolean.parseBoolean(conf.getProperty(key));
+        else {
+            logger.log(Level.SEVERE, "Key not found: " + key);
+            throw new IllegalArgumentException("Key not found: " + key);
+        }
+    }
+
     public Integer getIntProperty(String key) {
         if(conf.containsKey(key))
             return Integer.parseInt(conf.getProperty(key));
@@ -89,6 +98,10 @@ public class EnvManager {
         }
     }
 
+    public void setProperty(String key, Boolean value) {
+    	setProperty(key, value.toString());
+    }
+    
     public void setProperty(String key, Integer value) {
     	setProperty(key, value.toString());
     }

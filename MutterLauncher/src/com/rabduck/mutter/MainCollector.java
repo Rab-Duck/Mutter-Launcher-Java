@@ -42,7 +42,6 @@ public class MainCollector extends Task<MainCollector>{
 			historyItemList = envmngr.getExecHistory();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Env file I/O error:", e);
-			e.printStackTrace();
 			ErrorDialog.showErrorDialog("Env file I/O error:", e, false);
 			System.exit(-1);
 		}
