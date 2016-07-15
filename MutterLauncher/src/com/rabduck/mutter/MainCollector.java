@@ -28,7 +28,7 @@ import javafx.concurrent.Task;
 public class MainCollector extends Task<MainCollector>{
 	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainCollector.class.getName());
 	
-	private final Object syncObj = new Object();
+	private static final Object syncObj = new Object();
 	
 	private int execLogIndex = 0;
 	private EnvManager envmngr;
@@ -39,7 +39,6 @@ public class MainCollector extends Task<MainCollector>{
 		super();
 		try {
 			envmngr = EnvManager.getInstance();
-			historyItemList = envmngr.getExecHistory();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Env file I/O error:", e);
 			ErrorDialog.showErrorDialog("Env file I/O error:", e, false);
@@ -84,24 +83,50 @@ public class MainCollector extends Task<MainCollector>{
 			ErrorDialog.showErrorDialog("Collector thread await error:", e, true);
 			throw new RuntimeException(e);
 		}
-		synchronized (syncObj) {
-			itemList = null;
-			itemList = new ArrayList<>();
-			for (AppCollector app : listApp) {
-				itemList.addAll(app.getItemList());
-			}			
+		
+//		try {
+//			Thread.sleep(10000);
+//		} catch (InterruptedException e) {
+//		}
+		
+		itemList = null;
+		itemList = new ArrayList<>();
+		for (AppCollector app : listApp) {
+			itemList.addAll(app.getItemList());
 		}
+		synchronized (syncObj) {
+			storeItemList();
+		}
+		historyItemList = null;
 		
 		listApp = null;
 	}
 	
-	public List<Item> getAllItemList(){
-		synchronized (syncObj) {
-			List<Item> allItemList = new ArrayList<>();
-			allItemList.addAll(historyItemList);
-			allItemList.addAll(itemList);
-			return allItemList;
+	public boolean cachedCollect(){
+		List<Item> cachedItemList = envmngr.getItemList();
+		if(cachedItemList == null){
+			return false;
 		}
+		itemList = cachedItemList;
+		return true;
+	}
+	
+	public void storeItemList(){
+		synchronized (syncObj) {
+			envmngr.setItemList(itemList);
+		}
+	}
+	
+	public List<Item> getAllItemList() {
+		List<Item> allItemList = new ArrayList<>();
+		if (historyItemList == null) {
+			synchronized (syncObj) {
+				historyItemList = envmngr.getExecHistory();
+			}
+		}
+		allItemList.addAll(historyItemList);
+		allItemList.addAll(itemList);
+		return allItemList;
 	}
 	
 	static final boolean bUseParallel = false; 
@@ -113,23 +138,26 @@ public class MainCollector extends Task<MainCollector>{
 		
 		List<Item> grepList = new ArrayList<>();
 		
+		if(historyItemList == null){
+			synchronized (syncObj) {
+				historyItemList = envmngr.getExecHistory();
+			}
+		}
 		historyItemList.stream()
 		.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
 		.forEach(item -> {grepList.add(item);});
 
-		synchronized (syncObj) {
-			if(bUseParallel){
-				itemList.parallelStream()
-				.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
-				// .filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
-				.forEach(item -> {grepList.add(item);});
-			}
-			else{
-				itemList.stream()
-				.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
-				// .filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
-				.forEach(item -> {grepList.add(item);});
-			}
+		if(bUseParallel){
+			itemList.parallelStream()
+			.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
+			// .filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
+			.forEach(item -> {grepList.add(item);});
+		}
+		else{
+			itemList.stream()
+			.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
+			// .filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).matches(".*" + grepStr.toUpperCase(Locale.JAPANESE) + ".*");})
+			.forEach(item -> {grepList.add(item);});
 		}
 		return grepList;
 	}
@@ -151,7 +179,9 @@ public class MainCollector extends Task<MainCollector>{
 			historyItemList.add(0, historyItem);
 		}
 
-		envmngr.setExecHistory(historyItemList);
+		synchronized (syncObj) {
+			envmngr.setExecHistory(historyItemList);
+		}
 		
 /*		for (ListIterator<Item> iterator = itemList.listIterator(); iterator.hasNext();) {
 			Item itrItem = iterator.next();

@@ -98,14 +98,16 @@ public class Main extends Application {
 
 			primaryStage.setScene(scene);
 			primaryStage.setTitle("Mutter Launcher@Java");
-			primaryStage.initStyle(StageStyle.UTILITY);
-			try{
-				primaryStage.setX(envmngr.getIntProperty("WinPosX"));
-				primaryStage.setY(envmngr.getIntProperty("WinPosY"));
-			}catch(IllegalArgumentException e){
-				primaryStage.centerOnScreen();
-			}
+			//primaryStage.initStyle(StageStyle.UTILITY);
+			primaryStage.initStyle(StageStyle.DECORATED);
+
 			if(envmngr.getBooleanProperty("InitShow")){
+				try{
+					primaryStage.setX(envmngr.getIntProperty("WinPosX"));
+					primaryStage.setY(envmngr.getIntProperty("WinPosY"));
+				}catch(IllegalArgumentException e){
+					primaryStage.centerOnScreen();
+				}
 				primaryStage.show();
 			}
 			

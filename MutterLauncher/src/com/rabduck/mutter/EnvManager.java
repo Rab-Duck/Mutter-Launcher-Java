@@ -25,7 +25,8 @@ public class EnvManager {
 
 	private Properties conf;
     private String propsFilename = "properties.xml";
-	private String historyFilename = "HistoryList.obj";
+	private String historyFilename = "HistoryList.ser";
+	private String itemListFilename = "ItemList.ser";
     private String envDir;
     
     public static EnvManager envmngr;
@@ -50,6 +51,7 @@ public class EnvManager {
     	envDir = userHome + "\\MutterLauncher";
         propsFilename = envDir + "\\" + propsFilename;
         historyFilename = envDir + "\\" + historyFilename;
+        itemListFilename = envDir + "\\" + itemListFilename;
 
     	Path envPath = Paths.get(envDir);
     	
@@ -115,7 +117,7 @@ public class EnvManager {
         try {
             conf.storeToXML(new FileOutputStream(propsFilename), "Mutter Launcher Environment Value");
         } catch (IOException e) {
-        	logger.log(Level.WARNING, "Cann't write " + propsFilename + ".", e);
+        	logger.log(Level.WARNING, "Cannot write " + propsFilename + ".", e);
             // e.printStackTrace();
             ErrorDialog.showErrorDialog("Env file write error:" + propsFilename, e, true);
         }
@@ -126,7 +128,7 @@ public class EnvManager {
     	try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(historyFilename)))) {
 			oos.writeObject(historyList);
         } catch (IOException e) {
-        	logger.log(Level.SEVERE, "Cann't write " + historyFilename + ".", e);
+        	logger.log(Level.SEVERE, "Cannot write " + historyFilename + ".", e);
             ErrorDialog.showErrorDialog("History file write error:" + historyFilename, e, true);
         }
 		return;
@@ -140,9 +142,33 @@ public class EnvManager {
     	try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(historyFilename)))) {
     		historyList = (List<Item>)ois.readObject();
         } catch (Exception e) {
-        	logger.log(Level.SEVERE, "Cann't read " + envDir + historyFilename + ".", e);
+        	logger.log(Level.SEVERE, "Cannot read " + envDir + historyFilename + ".", e);
             ErrorDialog.showErrorDialog("History file read error:" + historyFilename, e, true);
         }
 		return historyList;
     }
+	public void setItemList(List<Item> itemList){
+    	try (ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(itemListFilename)))) {
+			oos.writeObject(itemList);
+        } catch (IOException e) {
+        	logger.log(Level.SEVERE, "Cannot write " + itemListFilename + ".", e);
+            ErrorDialog.showErrorDialog("History file write error:" + itemListFilename, e, true);
+        }
+		return;
+	}
+
+	public List<Item> getItemList(){
+    	List<Item> itemList = null;
+    	if(!Files.exists(Paths.get(itemListFilename))){
+    		return null;
+    	}
+    	try (ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(new FileInputStream(itemListFilename)))) {
+    		itemList = (List<Item>)ois.readObject();
+        } catch (Exception e) {
+        	logger.log(Level.SEVERE, "Cannot read " + envDir + itemListFilename + ".", e);
+            ErrorDialog.showErrorDialog("History file read error:" + itemListFilename, e, true);
+        }
+		return itemList;
+	}
+
 }

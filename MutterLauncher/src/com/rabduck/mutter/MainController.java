@@ -108,6 +108,7 @@ public class MainController implements Initializable{
 			System.exit(-1);
 		}
 
+		itemListView.setItems(items);
 		
 		itemListView.setCellFactory(new Callback<ListView<Item>, ListCell<Item>>() {
 		     @Override
@@ -115,27 +116,6 @@ public class MainController implements Initializable{
 		         return new ItemFormatCell();
 		     }
 		 });
-		itemListView.setItems(items);
-
-		// collector = new MainCollector();
-		collectorService.setDelay(Duration.ZERO);
-		collectorService.setPeriod(new Duration(1000*60*envmngr.getIntProperty("ResearchInterval")));
-		collectorService.setOnSucceeded(value -> {
-			logger.log(Level.FINE, "collect thread is succeeded:" + value);
-			collector = collectorService.getValue();
-			updateView(null);
-		});
-		collectorService.setOnFailed(value -> {
-			logger.log(Level.FINE, "collect thread is failed:" + value);
-		});
-		collectorService.setOnScheduled(value -> {
-			logger.log(Level.FINE, "collect thread is scheduled:" + value);
-		});
-		collectorService.setOnRunning(value -> {
-			btnUpdate.setDisable(true);
-		});
-		collect();
-		// collector.getAllItemList().stream().forEach(item -> {logger.log(Level.FINEST, item.getItemName() + ":" + item.getItemPath());});
 
 		// reference:
 		// java - JavaFX - ComboBox listener for its texfield - Stack Overflow
@@ -173,6 +153,33 @@ public class MainController implements Initializable{
 								itemListView.getSelectionModel().selectedItemProperty().get().getItemPath());
 		});
 		
+		collector = new MainCollector();
+		if(collector.cachedCollect()){
+			updateView("");
+		}
+		else{
+			collector = null;
+		}
+
+		// collector = new MainCollector();
+		collectorService.setDelay(Duration.ZERO);
+		collectorService.setPeriod(new Duration(1000*60*envmngr.getIntProperty("ResearchInterval")));
+		collectorService.setOnSucceeded(value -> {
+			logger.log(Level.FINE, "collect thread is succeeded:" + value);
+			collector = collectorService.getValue();
+			updateView(null);
+		});
+		collectorService.setOnFailed(value -> {
+			logger.log(Level.FINE, "collect thread is failed:" + value);
+		});
+		collectorService.setOnScheduled(value -> {
+			logger.log(Level.FINE, "collect thread is scheduled:" + value);
+		});
+		collectorService.setOnRunning(value -> {
+			btnUpdate.setDisable(true);
+		});
+		collect();
+		// collector.getAllItemList().stream().forEach(item -> {logger.log(Level.FINEST, item.getItemName() + ":" + item.getItemPath());});
 		
 		// unused by NullPointerException 
 		// primaryStage = (Stage)buttonCancel.getScene().getWindow();
@@ -270,41 +277,42 @@ public class MainController implements Initializable{
 	public void setStage(Stage stage){
 		this.stage = stage;
 	}
+
+	final class ItemFormatCell extends ListCell<Item> {
+	    public ItemFormatCell() {    }
+	      
+	    @Override protected void updateItem(Item item, boolean empty) {
+	    	final boolean bUseJLabel = false;
+	    	
+	        super.updateItem(item, empty);
+	        
+	        if(empty || item == null){
+	        	 setText(null);
+	        	 setGraphic(null);
+	        	 return;
+	        }
+	        
+	        setText(item.getItemName());
+	        setContentDisplay(ContentDisplay.LEFT);
+
+	        if(bUseJLabel){
+		        SwingNode sn = new SwingNode();
+		        // sn.setContent(new JLabel(item.getIcon()));
+		        SwingUtilities.invokeLater(() -> {
+		        	sn.setContent(new JLabel(item.getIcon()));
+		        });
+		        setGraphic(sn);
+	        }
+	        else{
+	            // reference: 
+				// 	JavaFX file listview with icon and file name - Stack Overflow
+				// 	http://stackoverflow.com/questions/28034432/javafx-file-listview-with-icon-and-file-name        	
+	            Icon icon = item.getIcon();
+	            BufferedImage bufferedImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+	            icon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);
+	            setGraphic(new ImageView(SwingFXUtils.toFXImage(bufferedImage, null)));        	
+	        }
+	    }
+	}
 }
 
-class ItemFormatCell extends ListCell<Item> {
-    public ItemFormatCell() {    }
-      
-    @Override protected void updateItem(Item item, boolean empty) {
-    	final boolean bUseJLabel = false;
-    	
-        super.updateItem(item, empty);
-        
-        if(empty || item == null){
-        	 setText(null);
-        	 setGraphic(null);
-        	 return;
-        }
-        
-        setText(item.getItemName());
-        setContentDisplay(ContentDisplay.LEFT);
-
-        if(bUseJLabel){
-	        SwingNode sn = new SwingNode();
-	        // sn.setContent(new JLabel(item.getIcon()));
-	        SwingUtilities.invokeLater(() -> {
-	        	sn.setContent(new JLabel(item.getIcon()));
-	        });
-	        setGraphic(sn);
-        }
-        else{
-            // reference: 
-			// 	JavaFX file listview with icon and file name - Stack Overflow
-			// 	http://stackoverflow.com/questions/28034432/javafx-file-listview-with-icon-and-file-name        	
-            Icon icon = item.getIcon();
-            BufferedImage bufferedImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
-            icon.paintIcon(null, bufferedImage.getGraphics(), 0, 0);
-            setGraphic(new ImageView(SwingFXUtils.toFXImage(bufferedImage, null)));        	
-        }
-    }
-}
