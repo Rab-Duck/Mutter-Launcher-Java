@@ -32,10 +32,14 @@ public class MainCollector extends Task<MainCollector>{
 	
 	private int execLogIndex = 0;
 	private EnvManager envmngr;
+	private List<Item> itemList = new ArrayList<>();
+	private List<Item> historyItemList;
+
 	public MainCollector() {
 		super();
 		try {
 			envmngr = EnvManager.getInstance();
+			historyItemList = envmngr.getExecHistory();
 		} catch (IOException e) {
 			logger.log(Level.SEVERE, "Env file I/O error:", e);
 			e.printStackTrace();
@@ -49,8 +53,9 @@ public class MainCollector extends Task<MainCollector>{
 		collect();
 		return this;
 	}
-	private List<Item> itemList = new ArrayList<>();
 	public void collect(){
+		
+		
 		List<AppCollector> listApp = new ArrayList<>();
 		String [] collectors = {"com.rabduck.mutter.SHFolderCollector", "com.rabduck.mutter.PathFolderCollector"};
 		
@@ -65,7 +70,7 @@ public class MainCollector extends Task<MainCollector>{
 		}
 		
 		// ExecutorService executor = Executors.newSingleThreadExecutor();
-		ExecutorService executor = Executors.newFixedThreadPool(1);
+		ExecutorService executor = Executors.newFixedThreadPool(envmngr.getIntProperty("CollectThreadNum"));
 		
 		for (AppCollector app : listApp) {
 			executor.execute(app);
@@ -84,7 +89,6 @@ public class MainCollector extends Task<MainCollector>{
 			itemList = null;
 			itemList = new ArrayList<>();
 			for (AppCollector app : listApp) {
-				itemList.addAll(envmngr.getExecHistory());
 				itemList.addAll(app.getItemList());
 			}			
 		}
@@ -94,7 +98,10 @@ public class MainCollector extends Task<MainCollector>{
 	
 	public List<Item> getAllItemList(){
 		synchronized (syncObj) {
-			return new ArrayList<Item>(itemList);
+			List<Item> allItemList = new ArrayList<>();
+			allItemList.addAll(historyItemList);
+			allItemList.addAll(itemList);
+			return allItemList;
 		}
 	}
 	
@@ -107,6 +114,10 @@ public class MainCollector extends Task<MainCollector>{
 		
 		List<Item> grepList = new ArrayList<>();
 		
+		historyItemList.stream()
+		.filter(item -> {return item.getItemName().toUpperCase(Locale.JAPANESE).contains(grepStr.toUpperCase(Locale.JAPANESE));})
+		.forEach(item -> {grepList.add(item);});
+
 		synchronized (syncObj) {
 			if(bUseParallel){
 				itemList.parallelStream()
@@ -125,10 +136,25 @@ public class MainCollector extends Task<MainCollector>{
 	}
 
 	public void setExecHistory(Item execItem){
+		final int historyMax = envmngr.getIntProperty("HistoryMax");
+		
 		int i = 0;
-		int historyMax = envmngr.getIntProperty("HistoryMax");
-		List<Item> historyList = new ArrayList<>();
-		for (ListIterator<Item> iterator = itemList.listIterator(); iterator.hasNext();) {
+		for (Iterator<Item> iterator = historyItemList.iterator(); iterator.hasNext();i++) {
+			Item itrItem = (Item) iterator.next();
+			if(i>=historyMax-1 || itrItem.historyEquals(execItem)){
+				iterator.remove();
+				i--;
+			}
+		}
+		if(historyMax > 0){
+			Item historyItem = execItem.copy();
+			historyItem.setType(Item.TYPE_HISTORY);
+			historyItemList.add(0, historyItem);
+		}
+
+		envmngr.setExecHistory(historyItemList);
+		
+/*		for (ListIterator<Item> iterator = itemList.listIterator(); iterator.hasNext();) {
 			Item itrItem = iterator.next();
 			if(itrItem.getType() >= Item.TYPE_FIX){
 				continue;
@@ -159,7 +185,7 @@ public class MainCollector extends Task<MainCollector>{
 				break;
 			}
 		}
-		envmngr.setExecHistory(historyList);
+*/		
 
 	}
 }
