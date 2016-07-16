@@ -52,9 +52,9 @@ public class MainController implements Initializable{
 	@FXML
 	private ListView<Item> itemListView;
 	@FXML
-	private Button buttonOk;
+	private Button btnExec;
 	@FXML
-	private Button buttonCancel;
+	private Button btnClose;
 	@FXML
 	private Button btnUpdate;
 	@FXML
@@ -86,12 +86,8 @@ public class MainController implements Initializable{
     }
     
 	private void collect(){
-		// collector = new MainCollector();
 		if(collectorService != null){
 			collectorService.restart();
-//		    Thread thread = new Thread(collector);
-//		    thread.setDaemon(true);
-//		    thread.start();
 		}
 	}
 	
@@ -134,16 +130,6 @@ public class MainController implements Initializable{
 				executeSelectedItem();
 			}
 		});
-		cmbbxSearchText.getEditor().setOnAction((event) -> {
-			logger.log(Level.FINEST, "OnAction editorProperty:" + event);
-			// executeSelectedItem();
-		});
-		cmbbxSearchText.valueProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue ov, String t, String t1) {
-				 logger.log(Level.FINEST, ov.toString()); logger.log(Level.FINEST,t); logger.log(Level.FINEST,t1);
-			}
-		});
 		
 		// txtPathView.textProperty().bind(itemList.getSelectionModel().selectedItemProperty());
 		itemListView.getSelectionModel().selectedItemProperty().addListener(listener -> {
@@ -161,7 +147,6 @@ public class MainController implements Initializable{
 			collector = null;
 		}
 
-		// collector = new MainCollector();
 		collectorService.setDelay(Duration.ZERO);
 		collectorService.setPeriod(new Duration(1000*60*envmngr.getIntProperty("ResearchInterval")));
 		collectorService.setOnSucceeded(value -> {
@@ -181,24 +166,8 @@ public class MainController implements Initializable{
 		collect();
 		// collector.getAllItemList().stream().forEach(item -> {logger.log(Level.FINEST, item.getItemName() + ":" + item.getItemPath());});
 		
-		// unused by NullPointerException 
-		// primaryStage = (Stage)buttonCancel.getScene().getWindow();
 	}
 
-	// Event Listener on CombBox[#cmbbxSearchText].onAction
-	@FXML
-	public void actionCmbbxSearchText(ActionEvent event) {
-		logger.log(Level.FINEST, "actionCmbbxSearchText:" + event);
-	}
-	@FXML
-	public void onKeyPressedCmbbxSearchText(KeyEvent event){
-		logger.log(Level.FINEST, "onKeyPressedCmbbxSearchText:" + event);
-	}
-	@FXML
-	public void onKeyTypedCmbbxSearchText(KeyEvent event){
-		logger.log(Level.FINEST, "onKeyTypedCmbbxSearchText:" + event);
-	}
-	
 	private void OnKeyPressedCommon(KeyEvent event){
 
 		switch (event.getCode()) {
@@ -233,7 +202,7 @@ public class MainController implements Initializable{
 	
 	// Event Listener on Button[#buttonOk].onAction
 	@FXML
-	public void onActionOk(ActionEvent event) {
+	public void onActionExec(ActionEvent event) {
 		executeSelectedItem();
 	}
 	
@@ -256,8 +225,7 @@ public class MainController implements Initializable{
 	
 	// Event Listener on Button[#buttonCancel].onAction
 	@FXML
-	public void onActionCancel(ActionEvent event) {
-		// buttonCancel.getScene().getWindow().hide();
+	public void onActionClose(ActionEvent event) {
 		if(stage != null){ stage.hide(); }
 	}
 
@@ -297,7 +265,6 @@ public class MainController implements Initializable{
 
 	        if(bUseJLabel){
 		        SwingNode sn = new SwingNode();
-		        // sn.setContent(new JLabel(item.getIcon()));
 		        SwingUtilities.invokeLater(() -> {
 		        	sn.setContent(new JLabel(item.getIcon()));
 		        });

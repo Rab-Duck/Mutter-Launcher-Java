@@ -63,7 +63,7 @@ public class EnvManager {
 					conf.setProperty(key, _conf.getProperty(key));
 				}
             }catch(IOException e){
-                logger.log(Level.WARNING, "Can't read personal env file:" + propsFilename, e);
+                logger.log(Level.WARNING, "Cannot read personal env file:" + propsFilename, e);
             }
     	}
     	else{
@@ -134,7 +134,8 @@ public class EnvManager {
 		return;
     }
 
-    public List<Item> getExecHistory(){
+    @SuppressWarnings("unchecked")
+	public List<Item> getExecHistory(){
     	List<Item> historyList= new ArrayList<>();
     	if(!Files.exists(Paths.get(historyFilename))){
     		return historyList;
@@ -157,6 +158,7 @@ public class EnvManager {
 		return;
 	}
 
+	@SuppressWarnings("unchecked")
 	public List<Item> getItemList(){
     	List<Item> itemList = null;
     	if(!Files.exists(Paths.get(itemListFilename))){

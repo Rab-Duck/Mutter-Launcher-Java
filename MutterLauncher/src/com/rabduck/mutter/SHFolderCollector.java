@@ -33,13 +33,6 @@ public class SHFolderCollector implements AppCollector  {
 		}
 		
 		
-		
-//		envmap.entrySet().stream().forEach(e -> {
-//			for (int i = 0; i < folderlist.length; i++) {
-//				folderlist[i] = folderlist[i].replace("%" + e.getKey() + "%", e.getValue());
-//			}
-//		});;
-
 		for(String key : envmap.keySet()){
 			for (int i = 0; i < folderlist.length; i++) {
 				folderlist[i] = folderlist[i].replace("%" + key + "%", envmap.get(key));
@@ -60,8 +53,7 @@ public class SHFolderCollector implements AppCollector  {
 				fc.collect();
 				items.addAll(fc.getItemList());
 			} catch (IOException e) {
-				logger.log(Level.INFO, "Special Folder not exists: " + shFolder);
-				// e.printStackTrace();
+				logger.log(Level.INFO, "Special Folder not exists: " + shFolder, e);
 			}
 		}
 		

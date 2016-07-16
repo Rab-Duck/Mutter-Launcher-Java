@@ -11,19 +11,19 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="200.0" minWidth="200.0" prefHeight="400.0" prefWidth="441.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.rabduck.mutter.MainController">
    <children>
-      <VBox layoutX="24.0" layoutY="24.0" prefHeight="349.0" prefWidth="395.0" AnchorPane.bottomAnchor="24.0" AnchorPane.leftAnchor="24.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="24.0">
+      <VBox layoutX="24.0" layoutY="24.0" prefHeight="349.0" prefWidth="395.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="10.0">
          <children>
             <AnchorPane>
                <children>
-                  <ComboBox fx:id="cmbbxSearchText" editable="true" onAction="#actionCmbbxSearchText" onKeyPressed="#onKeyPressedCmbbxSearchText" onKeyTyped="#onKeyTypedCmbbxSearchText" prefHeight="23.0" promptText="input search text" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+                  <ComboBox fx:id="cmbbxSearchText" editable="true" prefHeight="23.0" promptText="input search text" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
                </children>
             </AnchorPane>
             <ListView fx:id="itemListView" onKeyTyped="#onKeyTypedItemListView" onMouseClicked="#onMouseClickedListView" prefHeight="1000.0" prefWidth="393.0" />
             <TextField fx:id="txtPathView" editable="false" />
             <HBox alignment="BOTTOM_RIGHT" spacing="5.0">
                <children>
-                  <Button fx:id="buttonOk" minWidth="100.0" mnemonicParsing="false" onAction="#onActionOk" text="OK" />
-                  <Button fx:id="buttonCancel" minWidth="100.0" mnemonicParsing="false" onAction="#onActionCancel" text="Cancel" />
+                  <Button fx:id="btnExec" minWidth="100.0" mnemonicParsing="false" onAction="#onActionExec" text="Exec" />
+                  <Button fx:id="btnClose" minWidth="100.0" mnemonicParsing="false" onAction="#onActionClose" text="Close" />
                </children>
                <VBox.margin>
                   <Insets />

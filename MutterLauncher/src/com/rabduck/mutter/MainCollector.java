@@ -1,12 +1,9 @@
 package com.rabduck.mutter;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -14,12 +11,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javafx.application.Platform;
 import javafx.concurrent.Task;
-
-/**
- * 
- */
 
 /**
  * @author Rab-Duck
@@ -30,7 +22,6 @@ public class MainCollector extends Task<MainCollector>{
 	
 	private static final Object syncObj = new Object();
 	
-	private int execLogIndex = 0;
 	private EnvManager envmngr;
 	private List<Item> itemList = new ArrayList<>();
 	private List<Item> historyItemList;
@@ -165,56 +156,22 @@ public class MainCollector extends Task<MainCollector>{
 	public void setExecHistory(Item execItem){
 		final int historyMax = envmngr.getIntProperty("HistoryMax");
 		
+		Item historyItem = execItem.copy();
+		historyItem.setType(Item.TYPE_HISTORY);
+		historyItemList.add(0, historyItem);
+
 		int i = 0;
 		for (Iterator<Item> iterator = historyItemList.iterator(); iterator.hasNext();i++) {
 			Item itrItem = (Item) iterator.next();
-			if(i>=historyMax-1 || itrItem.historyEquals(execItem)){
+			if(i>=historyMax || (i!=0 && itrItem.historyEquals(execItem))){
 				iterator.remove();
 				i--;
 			}
-		}
-		if(historyMax > 0){
-			Item historyItem = execItem.copy();
-			historyItem.setType(Item.TYPE_HISTORY);
-			historyItemList.add(0, historyItem);
 		}
 
 		synchronized (syncObj) {
 			envmngr.setExecHistory(historyItemList);
 		}
 		
-/*		for (ListIterator<Item> iterator = itemList.listIterator(); iterator.hasNext();) {
-			Item itrItem = iterator.next();
-			if(itrItem.getType() >= Item.TYPE_FIX){
-				continue;
-			}
-			else if(i == 0 && 
-					(itrItem.getType() == Item.TYPE_HISTORY || itrItem.getType() == Item.TYPE_NORMAL)){
-				Item historyItem = execItem.copy();
-				historyItem.setType(Item.TYPE_HISTORY);
-				iterator.previous();
-				iterator.add(historyItem);
-				iterator.next();
-				historyList.add(historyItem);
-				i++;
-			}
-			if(itrItem.getType() == Item.TYPE_HISTORY){
-				if(itrItem.historyEquals(execItem)){
-					iterator.remove();
-					continue;
-				}
-				else if(++i > historyMax){
-					iterator.remove();
-				}else{
-					historyList.add(itrItem);
-				}
-				continue;
-			}
-			if(itrItem.getType() == Item.TYPE_NORMAL){
-				break;
-			}
-		}
-*/		
-
 	}
 }

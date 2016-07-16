@@ -9,5 +9,5 @@
 	<entry key="HotkeyKey">67</entry>
 	<entry key="ResearchInterval">360</entry>
 	<entry key="HistoryMax">50</entry>
-	<entry key="InitShow">true</entry>
+	<entry key="InitShow">false</entry>
 </properties>
