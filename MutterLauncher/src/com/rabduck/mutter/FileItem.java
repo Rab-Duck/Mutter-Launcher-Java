@@ -13,9 +13,10 @@ import javax.swing.filechooser.FileSystemView;
 
 public class FileItem implements Item{
 	private static final long serialVersionUID = 3561176450115531753L;
+	private static final boolean bIconCached = false;
+
 	private String path;
-	private transient Icon icon;
-	private final boolean bIconCached = false;
+	private Icon icon;
 
 	public int type;
 	public FileItem(String fullPath) {

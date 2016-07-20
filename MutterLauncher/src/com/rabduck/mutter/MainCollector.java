@@ -21,6 +21,7 @@ public class MainCollector extends Task<MainCollector>{
 	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainCollector.class.getName());
 	
 	private static final Object syncObj = new Object();
+	private static final boolean bUseParallel = false; 
 	
 	private EnvManager envmngr;
 	private List<Item> itemList = new ArrayList<>();
@@ -120,7 +121,6 @@ public class MainCollector extends Task<MainCollector>{
 		return allItemList;
 	}
 	
-	static final boolean bUseParallel = false; 
 	public List<Item> grep(String grepStr){
 
 		if(grepStr == null || grepStr.equals("")){

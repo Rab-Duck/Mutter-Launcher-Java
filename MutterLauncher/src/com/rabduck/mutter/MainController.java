@@ -44,6 +44,7 @@ public class MainController implements Initializable{
 
 	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());
 	private static EnvManager envmngr;
+	private static final boolean bUseJLabel = false;
 
 	@FXML
 	private ComboBox<String> cmbbxSearchText;
@@ -250,7 +251,6 @@ public class MainController implements Initializable{
 	    public ItemFormatCell() {    }
 	      
 	    @Override protected void updateItem(Item item, boolean empty) {
-	    	final boolean bUseJLabel = false;
 	    	
 	        super.updateItem(item, empty);
 	        
