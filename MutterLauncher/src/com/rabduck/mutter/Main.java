@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -100,6 +101,7 @@ public class Main extends Application {
 			primaryStage.setTitle("Mutter Launcher@Java");
 			//primaryStage.initStyle(StageStyle.UTILITY);
 			primaryStage.initStyle(StageStyle.DECORATED);
+			primaryStage.getIcons().add( new Image(getClass().getResourceAsStream( "MutterLauncher.png" ))); 
 
 			if(envmngr.getBooleanProperty("InitShow")){
 				try{
@@ -119,7 +121,8 @@ public class Main extends Application {
 		    SystemTray tray = SystemTray.getSystemTray();
 
 		    // アイコンの生成と登録
-		    icon = new TrayIcon(ImageIO.read(getClass().getResourceAsStream("reload_12x14.png")));
+		    icon = new TrayIcon(ImageIO.read(getClass().getResourceAsStream("MutterLauncher.png")));
+		    icon.setImageAutoSize(true);
 	        icon.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
