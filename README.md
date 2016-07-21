@@ -1,5 +1,7 @@
 # Mutter-Launcher-Java
 
+Yet, yet another application lancher for Windows by Java.
+
 ## これは何？
 
 自分で Java8/JavaFX 学習用に  
@@ -17,3 +19,6 @@ Main.java から実行して下さい。
 NetBeans の方、ごめんなさい...
 ただ、JavaFX 用のプロジェクト設定をして、JIntellitype.jar/dll にパスを通せば行けるのではないかと思われます。
 
+## ブランチについて
+develop ブランチで開発をして、適宜 master 側にマージをしています。  
+とりあえず動かしてみるには master 側をお勧めします。
