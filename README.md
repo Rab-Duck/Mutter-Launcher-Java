@@ -10,6 +10,12 @@ Mutter Launcher <http://hp.vector.co.jp/authors/VA022068/soft/bin/mlnch/>
 一人プロジェクト＆学習を兼ねているので説明などは不十分ですが、
 もし興味あれば覗いてみて下さい。
 
+## とりあえずアプリを動かしてみるには？
+
+build/dist 配下にビルドしたものが置いてあるので、 MutterLauncher.jar で実行できます。
+JIntellitype.dll はデフォルトでは 64bit のものなので、  
+32bit 環境では JIntellitype32.dll の方を JIntellitype.dll にリネームして下さい。
+
 ## プロジェクトを動かすには？
 
 Eclipse + e(fx)clipse<http://www.eclipse.org/efxclipse/index.html> で作っています。  
