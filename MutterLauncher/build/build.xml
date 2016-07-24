@@ -101,7 +101,7 @@
 	
 		<copy todir="dist">
 			<fileset dir="../lib">
-				<filename name="JIntellitype.dll"/>
+				<filename name="JIntellitype*.dll"/>
 			</fileset>
 			<fileset dir="..">
 				<filename name="properties.xml"/>
