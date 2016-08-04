@@ -5,6 +5,7 @@ package com.rabduck.mutter;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class EnvManager {
     private String propsFilename = "properties.xml";
 	private String historyFilename = "HistoryList.ser";
 	private String itemListFilename = "ItemList.ser";
+	private String anyFolderListFilename = "FolderList.txt";
     private String envDir;
     
     public static EnvManager envmngr;
@@ -50,6 +52,7 @@ public class EnvManager {
         propsFilename = envDir + "\\" + propsFilename;
         historyFilename = envDir + "\\" + historyFilename;
         itemListFilename = envDir + "\\" + itemListFilename;
+        anyFolderListFilename = envDir + "\\" + anyFolderListFilename;
 
     	Path envPath = Paths.get(envDir);
     	
@@ -169,6 +172,19 @@ public class EnvManager {
             ErrorDialog.showErrorDialog("History file read error:" + itemListFilename, e, true);
         }
 		return itemList;
+	}
+	
+	public String [] getAnyFolderList(){
+		try {
+			List<String> allLines = Files.readAllLines(Paths.get(anyFolderListFilename));
+			return allLines.toArray(new String[allLines.size()]);
+		} catch (NoSuchFileException nsfe){
+			return new String[0];
+		} catch (Exception e) {
+        	logger.log(Level.SEVERE, "Cannot read " + envDir + anyFolderListFilename + ".", e);
+            ErrorDialog.showErrorDialog("FolderList file read error:" + anyFolderListFilename, e, true);
+		}
+		return new String[0];
 	}
 
 }

@@ -16,12 +16,18 @@ import java.util.logging.Logger;
  */
 public class PathFolderCollector implements AppCollector {
 
-	private static Logger logger = Logger.getLogger(com.rabduck.mutter.MainController.class.getName());
+	private static Logger logger = Logger.getLogger(com.rabduck.mutter.PathFolderCollector.class.getName());
 	
 	private String [] pathFolders = null;
 	
 	public PathFolderCollector(){
-		pathFolders = System.getenv("PATH").split(";");
+		String path = System.getenv("PATH");
+		if(path == null){
+			pathFolders = new String[0];
+		}
+		else{
+			pathFolders = path.split(";");
+		}
 	}
 
 	private List<Item> items;
@@ -31,13 +37,13 @@ public class PathFolderCollector implements AppCollector {
 	@Override
 	public void collect() {
 		items = new ArrayList<>();
+		String pathExt = System.getenv("PATHEXT");
+		if(pathExt == null || pathExt.equals("")){
+			// default value from https://en.wikipedia.org/wiki/Environment_variable#Default_values
+			pathExt = ".com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh;.msc";
+		}
 		for(String pathFolder : pathFolders){
 			try {
-				String pathExt = System.getenv("PATHEXT");
-				if(pathExt == null || pathExt.equals("")){
-					// default value from https://en.wikipedia.org/wiki/Environment_variable#Default_values
-					pathExt = ".com;.exe;.bat;.cmd;.vbs;.vbe;.js;.jse;.wsf;.wsh;.msc";
-				}
 				FileCollector fc = new FileCollector(pathFolder, 1, pathExt);
 				fc.collect();
 				items.addAll(fc.getItemList());
