@@ -47,7 +47,7 @@ public class MainCollector extends Task<MainCollector>{
 		
 		
 		List<AppCollector> listApp = new ArrayList<>();
-		String [] collectors = {"com.rabduck.mutter.SHFolderCollector", "com.rabduck.mutter.PathFolderCollector"};
+		String [] collectors = {"com.rabduck.mutter.SHFolderCollector", "com.rabduck.mutter.PathFolderCollector", "com.rabduck.mutter.AnyFolderCollector"};
 		
 		try {
 			for (String collector : collectors) {
