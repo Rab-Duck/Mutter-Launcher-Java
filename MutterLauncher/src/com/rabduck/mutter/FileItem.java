@@ -3,12 +3,10 @@ package com.rabduck.mutter;
 import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.swing.Icon;
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 
 public class FileItem implements Item{
